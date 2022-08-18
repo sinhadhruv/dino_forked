@@ -25,6 +25,8 @@ import torchvision
 from torchvision import transforms as pth_transforms
 import numpy as np
 from PIL import Image
+from PIL import UnidentifiedImageError
+
 
 import utils
 import vision_transformer as vits
@@ -40,6 +42,8 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 class VideoGenerator:
     def __init__(self, args):
         self.args = args
+        print("hello")
+        print(self.args.input_path)
         # self.model = None
         # Don't need to load model if you only want a video
         if not self.args.video_only:
@@ -90,6 +94,7 @@ class VideoGenerator:
 
                         self._inference(self.args.input_path, attention_folder)
 
+                        print("attention_folder", attention_folder)
                         self._generate_video_from_images(
                             attention_folder, self.args.output_path
                         )
@@ -118,7 +123,9 @@ class VideoGenerator:
 
     def _generate_video_from_images(self, inp: str, out: str):
         img_array = []
-        attention_images_list = sorted(glob.glob(os.path.join(inp, "attn-*.jpg")))
+        print("input=", inp)
+        #attention_images_list = sorted(glob.glob(os.path.join(inp, "attn-*.jpeg")))
+        attention_images_list = sorted(glob.glob(os.path.join(inp, "*.jpeg")))
 
         # Get size of the first image
         with open(attention_images_list[0], "rb") as f:
@@ -149,12 +156,14 @@ class VideoGenerator:
 
     def _inference(self, inp: str, out: str):
         print(f"Generating attention images to {out}")
-
-        for img_path in tqdm(sorted(glob.glob(os.path.join(inp, "*.jpg")))):
+        #img_path_default = os.path.jjoin(inp,"1580109404.jpeg")
+        for img_path in tqdm(sorted(glob.glob(os.path.join(inp, "*.jpeg")))):
             with open(img_path, "rb") as f:
-                img = Image.open(f)
-                img = img.convert("RGB")
-
+                try:
+                    img = Image.open(f)
+                    img = img.convert("RGB")
+                except UnidentifiedImageError:
+                    continue
             if self.args.resize is not None:
                 transform = pth_transforms.Compose(
                     [

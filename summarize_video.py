@@ -109,13 +109,16 @@ if __name__ == '__main__':
     # main_images = glob.glob("/net/projects/soirov/mounting_root/images/SB0318/*")
     # parent_dir= "/home/dhruvs/dino/"
     # directory = "result-SB0318/summary_frames_new/"
+    #key_frames_output_path = "/home/dhruvs/dino/result-SB0318/summary_frames_new/""
 
     parser = argparse.ArgumentParser(description='Inputs to get key frames')
     parser.add_argument('--attention_path', type=str, required=True, help='Path to folder containing attention images for a dive')
     parser.add_argument('--main_images_path', type=str, required=True, help='Path to folder containing main images for the dive')
     parser.add_argument('--key_frames_output_path', type=str, required=True, help='Path to folder where the key frame will be stored')
-
-    main_images = glob.glob(args.main_images_path+"/*")
+    args = parser.parse_args()
+    
+    main_images_path = args.main_images_path
+    main_images = glob.glob(main_images_path+"/*")
     image_names = glob.glob(args.attention_path+"/*")
     path_new = args.key_frames_output_path
 
@@ -127,7 +130,8 @@ if __name__ == '__main__':
     main_paths = [os.path.join(main_images_path,s.split('-')[-1]) for s in final_paths]
 
     
-    path_new = os.path.join(parent_dir, directory)
+    #path_new = os.path.join(parent_dir, directory)
+    path_new = args.key_frames_output_path
     if os.path.exists(path_new):
         shutil.rmtree(path_new)
     os.mkdir(path_new)

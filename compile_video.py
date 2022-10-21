@@ -4,9 +4,10 @@ import m3u8_To_MP4
 import moviepy
 import shutil
 from moviepy.editor import *
+import argparse 
 
 
-def get_videos(path_new, image_names):
+def get_videos(path_new, image_names, main_url):
     """
     This method stores videos corresponding to each key frame
 
@@ -28,7 +29,7 @@ def get_videos(path_new, image_names):
 def concatenate_videos(path_new):
     """
     This method concatenates all the shorter videos into a longer video. Each of the shorter 
-    videos is of 1 minute but we only extract 4 seconds around the center of the video (29sec-31sec)
+    videos is of 1 minute but we only extract 3 seconds around the center of the video (29sec-31sec)
 
     Arguments
     ------------------
@@ -53,24 +54,24 @@ def concatenate_videos(path_new):
 
 if __name__ == '__main__':
 
-    #main_url = "https://streamcache.uc.r.appspot.com/SOI2020/FK200126/SB0318/HD_SIT/SOURCE/MASTER"
+    # main_url = "https://streamcache.uc.r.appspot.com/SOI2020/FK200126/SB0318/HD_SIT/SOURCE/MASTER"
     # path = "/home/dhruvs/dino/result-SB0318/"
     # dir = "video_secs/"
     # path_new = os.path.join(path, dir)
-    #image_names = glob.glob("result-SB0318/summary_frames_new/*.jpeg")
+    # image_names = glob.glob("result-SB0318/summary_frames_new/*.jpeg")
 
     parser = argparse.ArgumentParser(description='Inputs to compile video')
     parser.add_argument('--main_url', type=str, required=True, help='url to extract videos corresponding to the key frame')
     parser.add_argument('--path_new', type=str, required=True, help='path to store the extracted videos')
     parser.add_argument('--path_key_frames', type=str, required=True, help='path where key frames are stored')
-
+    args = parser.parse_args()
     image_names = glob.glob(args.path_key_frames+"/*.jpeg")
 
-    if os.path.exists(path_new):
-        shutil.rmtree(path_new)
-    os.makedirs(path_new)
+    if os.path.exists(args.path_new):
+        shutil.rmtree(args.path_new)
+    os.makedirs(args.path_new)
 
-    get_videos(path_new, image_names)
-    concatenate_videos(path_new)
+    get_videos(args.path_new, image_names, args.main_url)
+    concatenate_videos(args.path_new)
 
 
